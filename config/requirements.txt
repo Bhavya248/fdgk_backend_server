@@ -1,0 +1,12 @@
+cffi==1.16.0
+cryptography==42.0.8
+greenlet==3.0.3
+psycopg2==2.9.9
+pycparser==2.22
+pyserial==3.5
+python-dotenv==1.0.1
+rns==0.7.5
+six==1.16.0
+SQLAlchemy==2.0.31
+SQLAlchemy-Utils==0.41.2
+typing_extensions==4.12.2
