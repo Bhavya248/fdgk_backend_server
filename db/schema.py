@@ -559,11 +559,11 @@ class allocated_tasks(Base):
         String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False
     )
 
-    is_completed = Column(Boolean, nullable=False)
-
     task_issue_ts = Column(Integer, nullable=False)
 
     task_due_ts = Column(Integer, nullable=False)
+
+    task_completed_ts = Column(Integer, nullable=True)
 
     refrences = Column(
         String, nullable=True
@@ -591,7 +591,7 @@ class task_definition(Base):
 
     task_desc = Column(String, nullable=False)
 
-    task_deadline = Column(String, nullable=False)  # in seconds
+    task_deadline = Column(Integer, nullable=False, default=0)  # in seconds
 
     task_defined_ts = Column(Integer, nullable=False, default=int(time.time()))
 
