@@ -84,8 +84,9 @@ class device_status(enum.Enum):
 
 
 class sex(enum.Enum):
-    female = 0
-    male = 1
+    none = 0
+    female = 1
+    male = 2
 
 
 class device_type(enum.Enum):
