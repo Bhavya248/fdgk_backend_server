@@ -192,7 +192,7 @@ class Member(Base):
         foreign_keys="faucet_requests.user",
     )
 
-    user_id_for_taks = relationship(
+    user_id_for_tasks = relationship(
         "allocated_tasks",
         back_populates="user",
         foreign_keys="allocated_tasks.member_id",
@@ -227,7 +227,7 @@ class Member(Base):
     #     _member = Member()
     #     for key in data.keys():
     #         if key == 'password':
-    #             _member.__setattr__(key, get_hash_for_password(data.get(key)))
+    #             _member.__setattr__(key, password_hash_get(data.get(key)))
     #             continue
     #         _member.__setattr__(key, data.get(key))
     #     _member.__setattr__('rns_id', str(rns_identity))
@@ -252,7 +252,7 @@ class InviteCode(Base):
     __tablename__ = "invites"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    code = Column(String(5), nullable=False, unique=True)
+    code = Column(String(8), nullable=False, unique=True)
     inviter = Column(
         String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False
     )
@@ -285,7 +285,7 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     device_id = Column(
-        String(17), unique=True, nullable=False, index=True
+        String(40), unique=True, nullable=False, index=True
     )  # stores MAC address
     device_rns_id = Column(String(32), unique=True, nullable=False)
 
@@ -570,11 +570,11 @@ class allocated_tasks(Base):
     )  # this field can hold refrences of invoices, proofs, etc. for the task (can be updated by admin and user)
 
     user = relationship(
-        "Member", back_populates="user_id_for_taks", foreign_keys=[member_id]
+        "Member", back_populates="user_id_for_tasks", foreign_keys=[member_id]
     )
 
     task = relationship(
-        "task_definition", back_populates="definiton_for_taks", foreign_keys=[task_id]
+        "task_definition", back_populates="definiton_for_tasks", foreign_keys=[task_id]
     )
 
     __table_args__ = (UniqueConstraint(member_id, task_id),)
@@ -599,7 +599,7 @@ class task_definition(Base):
 
     reward_amount = Column(Float, nullable=True)
 
-    definiton_for_taks = relationship(
+    definiton_for_tasks = relationship(
         "allocated_tasks",
         back_populates="task",
         foreign_keys="allocated_tasks.task_id",
