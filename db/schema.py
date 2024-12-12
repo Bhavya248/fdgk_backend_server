@@ -15,7 +15,8 @@ from sqlalchemy import (
     Enum as eum,
     Numeric,
     CheckConstraint,
-    Float
+    Float,
+    LargeBinary
 )
 
 Base = declarative_base()
@@ -158,6 +159,7 @@ class Member(Base):
     shop_services = Column(String, nullable=True)
 
     attributes = Column(String, nullable=True)
+
     notes_by_admin = Column(String(250), nullable=True)
 
     __table_args__ = (
@@ -170,15 +172,10 @@ class Member(Base):
     inviter_codes = relationship(
         "InviteCode", back_populates="inviter_member", foreign_keys="InviteCode.inviter"
     )
-    user_id_for_device_table = relationship(
-        "Device",
-        back_populates="member_id",
-        foreign_keys="Device.device_associated_user_id",
-    )
+
     user_id_for_evm_address = relationship(
         "EVM_address", back_populates="member_id", foreign_keys="EVM_address.user"
     )
-
     evm_addresses = relationship(
         "EVM_address",
         back_populates="member",
@@ -198,11 +195,22 @@ class Member(Base):
         foreign_keys="allocated_tasks.member_id",
     )
 
+    user_id_for_device_table = relationship(
+        "Device",
+        back_populates="member_id",
+        foreign_keys="Device.device_associated_user_id",
+    )
     devices = relationship(
         "Device",
         back_populates="member",
         foreign_keys="Device.device_associated_user_id",
         overlaps="user_id_for_device_table",
+    )
+
+    user_id_for_service = relationship(
+        "Service",
+        back_populates="user",
+        foreign_keys="Service.owner",
     )
 
     def to_json(self):
@@ -611,3 +619,47 @@ class task_definition(Base):
             name="check_fixed_reward_and_reward_amount",
         ),
     )
+
+
+class Announce(Base):
+    __tablename__ = "announces"
+
+    dest = Column(String(32), nullable=False, primary_key=True)
+    dest_type = Column(Integer, nullable=False, default=0, primary_key=True)
+
+    data = Column(String, nullable=False, default="")
+    data_meta = Column(LargeBinary)
+
+    location_lat = Column(Float, nullable=False, default=0)
+    location_lon = Column(Float, nullable=False, default=0)
+
+    owner = Column(String(32), nullable=False, default="")
+
+    state = Column(Integer, nullable=False, default=0)
+    state_ts = Column(Integer, nullable=False, default=0)
+
+    hop_count = Column(Integer, nullable=False, default=0)
+    hop_interface = Column(String, nullable=False, default="")
+    hop_dest = Column(String(32), nullable=False, default="")
+
+    ts_add = Column(Integer, nullable=False, default=0)
+    ts_edit = Column(Integer, nullable=False, default=0)
+
+
+class Service(Base):
+    __tablename__ = "services"
+
+    rns_id = Column(String(32), nullable=False, primary_key=True)
+    display_name = Column(String(256))
+
+    city = Column(String(100))
+    state_name = Column(String(5))
+    country = Column(String(2))
+
+    _type = Column(Integer, nullable=False, default=0)
+    owner = Column(String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False, default="")
+
+    ts_add = Column(Integer, nullable=False, default=0)
+    ts_edit = Column(Integer, nullable=False, default=0)
+
+    user = relationship("Member", back_populates="user_id_for_service", foreign_keys=[owner])
