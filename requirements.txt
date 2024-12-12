@@ -1,0 +1,12 @@
+cffi
+cryptography
+greenlet
+psycopg2
+pycparser
+pyserial
+python-dotenv
+rns
+six
+SQLAlchemy
+SQLAlchemy-Utils
+typing_extensions
