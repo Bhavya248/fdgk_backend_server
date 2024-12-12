@@ -149,7 +149,7 @@ class Member(Base):
     country = Column(String(2))
     zip_code = Column(String(10))
     language = Column(String(2))
-    # DOB = Column(String(), nullable=False)
+    dob = Column(Integer, nullable=True)
     sex = Column(eum(sex), nullable=False)  # 0=None, 1=Female, 2=Male
     occupation = Column(String)
     skills = Column(String)
@@ -157,6 +157,7 @@ class Member(Base):
     shop_goods = Column(String, nullable=True)
     shop_services = Column(String, nullable=True)
 
+    attributes = Column(String, nullable=True)
     notes_by_admin = Column(String(250), nullable=True)
 
     __table_args__ = (
