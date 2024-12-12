@@ -20,7 +20,7 @@ from sqlalchemy import (
 
 Base = declarative_base()
 
-MEMBER_IMMUTABLE_FIELDS = {"id", "username", "email", "DID", "RNS_id"}
+MEMBER_IMMUTABLE_FIELDS = {"id", "username", "email", "did", "rns_id"}
 
 DEVICE_IMMUTABLE_FIELDS = {
     "id",
@@ -119,8 +119,8 @@ class Member(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
 
-    DID = Column(DID, unique=True, nullable=False)
-    RNS_id = Column(String(32), unique=True, nullable=False)
+    did = Column(DID, unique=True, nullable=False)
+    rns_id = Column(String(32), unique=True, nullable=False)
     hydra_wallet_address = Column(String)
 
     first_name = Column(String(100), nullable=False)
@@ -150,7 +150,7 @@ class Member(Base):
     zip_code = Column(String(10))
     language = Column(String(2))
     # DOB = Column(String(), nullable=False)
-    sex = Column(eum(sex), nullable=False)  # 0=female, 1=male
+    sex = Column(eum(sex), nullable=False)  # 0=None, 1=Female, 2=Male
     occupation = Column(String)
     skills = Column(String)
 
@@ -160,7 +160,7 @@ class Member(Base):
     notes_by_admin = Column(String(250), nullable=True)
 
     __table_args__ = (
-        UniqueConstraint(username, email, DID, RNS_id, hydra_wallet_address),
+        UniqueConstraint(username, email, did, rns_id, hydra_wallet_address),
     )
 
     invitee_codes = relationship(
@@ -229,7 +229,7 @@ class Member(Base):
     #             _member.__setattr__(key, get_hash_for_password(data.get(key)))
     #             continue
     #         _member.__setattr__(key, data.get(key))
-    #     _member.__setattr__('RNS_id', str(rns_identity))
+    #     _member.__setattr__('rns_id', str(rns_identity))
 
     #     return _member
 
@@ -253,10 +253,10 @@ class InviteCode(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String(5), nullable=False, unique=True)
     inviter = Column(
-        String(34), ForeignKey("members.RNS_id", onupdate="CASCADE"), nullable=False
+        String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False
     )
     invitee = Column(
-        String(34), ForeignKey("members.RNS_id", onupdate="CASCADE"), nullable=True
+        String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=True
     )
     is_valid = Column(Boolean, default=True, nullable=False)
     used_at = Column(Integer, nullable=True)
@@ -286,10 +286,10 @@ class Device(Base):
     device_id = Column(
         String(17), unique=True, nullable=False, index=True
     )  # stores MAC address
-    device_rns_id = Column(String(34), unique=True, nullable=False)
+    device_rns_id = Column(String(32), unique=True, nullable=False)
 
     device_associated_user_id = Column(
-        String(34), ForeignKey("members.RNS_id", onupdate="CASCADE"), nullable=False
+        String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False
     )
     device_display_name = Column(String(256), nullable=False)
 
@@ -352,7 +352,7 @@ class EVM_address(Base):
     address = Column(EVMAddress, unique=True, nullable=False, index=True)
 
     user = Column(
-        String(32), ForeignKey("members.RNS_id", onupdate="CASCADE"), nullable=False
+        String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False
     )
     usdt_swapped = Column(Numeric(precision=18, scale=4), nullable=False, default="0")
 
@@ -407,7 +407,7 @@ class faucet_requests(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user = Column(
-        String(34), ForeignKey("members.RNS_id", onupdate="CASCADE"), nullable=False
+        String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False
     )
 
     address = Column(EVMAddress, unique=True, nullable=False, index=True)
@@ -555,7 +555,7 @@ class allocated_tasks(Base):
     )
 
     member_id = Column(
-        String(32), ForeignKey("members.RNS_id", onupdate="CASCADE"), nullable=False
+        String(32), ForeignKey("members.rns_id", onupdate="CASCADE"), nullable=False
     )
 
     is_completed = Column(Boolean, nullable=False)
